@@ -1,5 +1,5 @@
 
-class ShaderProgram():
+class ShaderProgram:
     # Carga de shaders
     def __init__(self, ctx, vertex_shader_path, fragment_shader_path):
         with open(vertex_shader_path) as file:

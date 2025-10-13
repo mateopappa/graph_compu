@@ -28,8 +28,7 @@ class Scene:
             obj.rotation.x += 0.8
             obj.rotation.y += 0.6
             obj.rotation.z += 0.4
-
-            obj.position.x = math.sin(self.time) * 0.01
+           # obj.position.x = math.sin(self.time) * 2
             model = obj.get_model_matrix()
             # MVP = Projection * View * Model
             mvp = projection * view * model
