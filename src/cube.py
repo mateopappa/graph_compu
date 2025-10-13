@@ -1,3 +1,4 @@
+from model import Model
 from hit import HitBox, HitBoxOBB
 import numpy as np
 import glm
