@@ -1,4 +1,4 @@
-from hit import HitBox
+from hit import HitBox, HitBoxOBB
 import numpy as np
 import glm
 
@@ -8,7 +8,7 @@ class Cube:
         self.position = glm.vec3(*position)
         self.rotation = glm.vec3(*rotation)
         self.scale = glm.vec3(*scale)
-        self.__colision = HitBox(position, scale)
+        self.__colision = HitBoxOBB(get_model_matrix= lambda : self.get_model_matrix())
 
         self.vertices = np.array([
                 # posiciones        # colores
@@ -41,4 +41,5 @@ class Cube:
         model = glm.rotate(model, glm.radians(self.rotation.y), glm.vec3(0, 1, 0))
         model = glm.rotate(model, glm.radians(self.rotation.z), glm.vec3(0, 0, 1))
         model = glm.scale(model, self.scale)
+        
         return model
