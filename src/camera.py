@@ -1,5 +1,6 @@
 
 import glm
+from ray import Ray
 
 # Datos de una cámara simple
 class Camera:
@@ -17,3 +18,17 @@ class Camera:
 
     def get_view_matrix(self):
         return glm.lookAt(self.position, self.target, self.up)
+
+    def raycast(self, u, v):
+        fov_adjustment = glm.tan(glm.radians(self.fov) / 2)
+        ndc_x   = ((2 * u) - 1) * self.aspect * fov_adjustment
+        ndc_y   = (1 - 2 * v) * fov_adjustment
+        ray_dir_camera = glm.vec3(ndc_x, ndc_y, -1)
+        ray_dir_camera = glm.normalize(ray_dir_camera)
+
+        view = self.get_view_matrix()
+        inv_view = glm.inverse(view)
+        ray_dir_world = glm.vec3(
+            inv_view * glm.vec4(ray_dir_camera, 0.0)
+        )
+        return Ray(self.position, ray_dir_world)

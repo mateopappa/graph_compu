@@ -28,6 +28,12 @@ class Scene:
             self.graphics[obj.name].set_uniform('Mvp', mvp)
             self.graphics[obj.name].vao.render()
 
+    def on_mouse_click(self, u, v):
+        ray = self.camera.raycast(u, v)
+        for obj in self.objects:
+            if obj.check_hit(ray.origin, ray.direction):
+                print(f"Golpeaste al objeto {obj.name}!")
+
     def on_resize(self, width, height):
         self.ctx.viewport = (0, 0, width, height)
         self.camera.projection = glm.perspective(glm.radians(45), width / height, 0.1, 100.0)

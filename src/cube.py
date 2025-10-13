@@ -1,4 +1,4 @@
-
+from hit import HitBox
 import numpy as np
 import glm
 
@@ -8,6 +8,7 @@ class Cube:
         self.position = glm.vec3(*position)
         self.rotation = glm.vec3(*rotation)
         self.scale = glm.vec3(*scale)
+        self.__colision = HitBox(position, scale)
 
         self.vertices = np.array([
                 # posiciones        # colores
@@ -31,6 +32,8 @@ class Cube:
                                  ], dtype='i4')
 
 
+    def check_hit(self, origin, direction):
+        return self.__colision.check_hit(origin, direction)
     def get_model_matrix(self):
         model = glm.mat4(1)
         model = glm.translate(model, self.position)

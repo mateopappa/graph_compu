@@ -16,6 +16,12 @@ class Window(pyglet.window.Window):
         self.ctx.clear()
         if self.scene:
             self.scene.render()
+    def on_mouse_press(self,x,y,button,modifiers):
+        if self.scene is None:
+            return
+        u = x / self.width
+        v = y / self.height
+        self.scene.on_mouse_click(u, v)
 
     def on_resize(self, width, height):
         if self.scene:

@@ -25,7 +25,7 @@ cube2 = Cube((2,0,0), (0,45,0), (1,1,1), name="cube2")
 #objetos
 cube1 = Cube((-2,0,2), (0,45,45), (1,1,1,), name="cube1")
 cube2 = Cube((2,0,0), (0,45,0), (1,1,1,), name="cube2")
-sphere1 = Sphere((0,0,0), (0,0,0), (1,1,1), name="sphere1")
+#sphere1 = Sphere((0,0,0), (0,0,0), (1,1,1), name="sphere1")
 
 #escena
 
