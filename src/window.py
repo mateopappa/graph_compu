@@ -11,6 +11,11 @@ class Window(pyglet.window.Window):
     def set_scene(self, scene):
         self.scene = scene
 
+
+    def get_scene(self, scene):
+        self.scene=scene 
+        scene.start()
+
     def on_draw(self):  # se ejecuta por cada frame
         self.clear()
         self.ctx.clear()

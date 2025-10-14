@@ -1,8 +1,9 @@
 import glm
 
 class Hit: 
-    def __init__(self, get_model_matrix):
+    def __init__(self, get_model_matrix, hittable=True):
         self.__model_matrix = get_model_matrix
+        self.hittable = hittable
     @property
     def model_matrix(self):
         return self.__model_matrix()
@@ -21,8 +22,9 @@ class Hit:
     
     def check_hit(self, origin, direction):
         raise NotImplementedError("Subclasses should implement this method")
+
 class HitBox(Hit):
-    def __init__(self, get_model_matrix):
+    def __init__(self, get_model_matrix, hittable=True):
         self.__model_matrix=get_model_matrix
 
     @property
@@ -53,9 +55,11 @@ class HitBox(Hit):
         return t_near <= t_far and t_far >= 0
     
 class HitBoxOBB(Hit): 
-    def __init__(self, get_model_matrix):
-        super().__init__(get_model_matrix)
+    def __init__(self, get_model_matrix, hittable=True):
+        super().__init__(get_model_matrix, hittable)
     def check_hit(self, origin, direction):
+        if not self.hittable:
+            return False
         origin = glm.vec3(origin)
         direction = glm.normalize(glm.vec3(direction))
         
