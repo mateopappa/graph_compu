@@ -53,3 +53,6 @@ class ComputeShaderProgram:
                 uniform.write(value.to_bytes())
             elif hasattr(uniform, "value"):
                 uniform.value = value
+    
+    def run(self, groups_x=1, groups_y=1, groups_z=1):
+        self.prog.run(groups_x=groups_x, groups_y=groups_y, groups_z=groups_z)

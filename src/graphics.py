@@ -24,7 +24,7 @@ class Graphics:
     def load_textures(self, textures_data):
         textures = {}  # son llaves!!
         for texture in textures_data:
-            if texture.image_data is not None:
+            if texture.image_data :
                 texture_ctx = self.__ctx.texture(texture.size, texture.channels_amount, texture.get_bytes())
                 if texture.build_mipmaps:
                     texture_ctx.build_mipmaps()
@@ -33,6 +33,9 @@ class Graphics:
                 textures[texture.name] = (texture, texture_ctx)
         return textures
 
+    def bind_to_image(self, name="u_texture", unit= 0 , read=False, write=True):
+        self.__textures[name][1].bind_to_image(unit, read, write)
+        
     def render(self, uniforms):
         for name, value in uniforms.items():
             if name in self.__material.shader_program.prog:
