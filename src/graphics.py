@@ -1,3 +1,5 @@
+import numpy as np
+import glm 
 class Graphics:
     def __init__(self, ctx, model, material):
         self.__ctx = ctx
@@ -62,3 +64,26 @@ class ComputeGraphics(Graphics):
         self.__material = material
         self.textures = material.textures_data
         super().__init__(ctx, model, material)
+
+    def create_primitive(self, primitives):
+        amin, amax = self.__model.aabb
+        primitives.append({"aabb_min": amin, "aabb_max": amax})
+
+    def create_transformation_matrix(self, transformations_matrix, index):
+        m = self.__model.get_model_matrix()
+        transformations_matrix[index, :] = np.array(m.to_list(), dtype="f4").reshape(16)
+
+    def create_inverse_transformation_matrix(self, inverse_transformations_matrix, index):
+        m = self.__model.get_model_matrix()
+        inverse = glm.inverse(m)
+        inverse_transformations_matrix[index, :] = np.array(inverse.to_list(), dtype="f4").reshape(16)
+
+    def create_material_matrix(self, materials_matrix, index):
+        reflectivity = self.__material.reflectivity
+        r, g, b = self.__material.colorRGB
+
+        r = r / 255.0 if r > 1.0 else r
+        g = g / 255.0 if g > 1.0 else g
+        b = b / 255.0 if b > 1.0 else b
+
+        materials_matrix[index, :] = np.array([r, g, b, reflectivity], dtype="f4")

@@ -43,6 +43,14 @@ class RayTracerGPU:
         self.output_graphics.update_texture("u_texture", self.output_texture.image_data)
         self.output_graphics.bind_to_image("u_texture", self.texture_unit, read=False, write=True)
 
+        self.compute_shader.set_uniform('cameraPosition', self.camera.position)
+        self.compute_shader.set_uniform('inverseViewMatrix', self.camera.get_inverse_view_matrix())
+        self.compute_shader.set_uniform('fieldOfView', self.camera.fov)
+
+    def matrix_to_ssbo(self, matrix, binding = 0):
+        buffer = self.ctx.buffer(matrix.tobytes())
+        buffer.bind_to_storage_buffer(binding=binding) # tiene que ser igual al computer shader
+
     def resize(self, width, height):
         self.width, self.height = width, height
         self.output_texture = Texture("u_texture", width, height, 4, None, (255, 255, 255, 255))
@@ -53,10 +61,11 @@ class RayTracerGPU:
         self.bvh_ssbo = self.bvh_nodes.pack_to_bytes()
         buf_bvh = self.ctx.buffer(self.bvh_ssbo)
         buf_bvh.bind_to_storage_buffer(binding=binding)
+
     def run(self):
         groups_x = (self.width + 15) // 16
         groups_y = (self.height + 15) // 16
 
         self.compute_shader.run(groups_x=groups_x, groups_y=groups_y, groups_z=1)
         self.ctx.clear(0.0, 0.0, 0.0, 1.0)
-        self.output_graphics.render({"u_texture": self.output_texture})
+        self.output_graphics.render({"u_texture": self.texture_unit})
