@@ -21,7 +21,7 @@ class Scene:
     def render(self):
         self.time += 0.01
         for obj in self.objects:
-            if(obj.name != "Sprite"):
+            if(obj.animated):
                 obj.rotation += glm.vec3(0.8, 0.6, 0.4)
                 obj.position.x += math.sin(self.time) * 0.01
 

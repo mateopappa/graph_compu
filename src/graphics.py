@@ -51,3 +51,11 @@ class Graphics:
         texture_obj, texture_ctx = self.__textures[texture_name]
         texture_obj.update_data(new_data)
         texture_ctx.write(texture_obj.get_bytes())
+
+class ComputeGraphics(Graphics):
+    def __init__(self, ctx, model, material):
+        self.__ctx = ctx
+        self.__model = model
+        self.__material = material
+        self.textures = material.textures_data
+        super().__init__(ctx, model, material)
