@@ -81,6 +81,60 @@ bool intersectOrientedBox (int objectIndex, vec3 rayOriginWorld, vec3
     return hitDistance > EPS;
 }
 
+RayHit traverseBoundingVolumeHierarchy(vec3 rayOrigin, vec3 rayDirection) {
+    RayHit closestHit;
+    closestHit.didHit = false;
+    closestHit.distance = 1e20;
+
+
+    int nodeStack[32];
+    int stackPointer = 0;
+    nodeStack[stackPointer++] = 0;
+
+
+    while (stackPointer > 0) {
+        int nodeIndex = nodeStack[--stackPointer];
+        vec4 boundingBoxMin = bvhNodes[nodeIndex];
+        vec4 boundingBoxMax = bvhNodes[nodeIndex + 1];
+
+
+        float timeNear, timeFar;
+        bool intersects = intersectAxisAlignedBox(rayOrigin, rayDirection, boundingBoxMin.xyz, boundingBoxMax.xyz, timeNear, timeFar);
+       
+        if (!intersects || timeNear >= closestHit.distance)
+            continue;
+
+
+        int leftChildIndex = int(boundingBoxMin.w);
+        int rightChildOrPrimitiveIndex = int(boundingBoxMax.w);
+
+
+        if (rightChildOrPrimitiveIndex >= 0) {
+            float hitDist;
+            vec3 hitPos;
+            vec3 hitNorm;
+            if (intersectOrientedBox(rightChildOrPrimitiveIndex, rayOrigin, rayDirection,
+                                     hitDist, hitPos, hitNorm) && hitDist < closestHit.distance) {
+                closestHit.didHit = true;
+                closestHit.distance = hitDist;
+                closestHit.position = hitPos;
+                closestHit.normal = hitNorm;
+                vec4 material = materialData[rightChildOrPrimitiveIndex];
+                closestHit.color = material.rgb;
+                closestHit.reflectivity = material.a;
+            }
+        } else {
+            if (leftChildIndex >= 0)
+                nodeStack[stackPointer++] = leftChildIndex * 2;
+            int rightChildIndex = -rightChildOrPrimitiveIndex - 2;
+            if (rightChildIndex >= 0)
+                nodeStack[stackPointer++] = rightChildIndex * 2;
+        }
+    }
+    return closestHit;
+}
+
+
 void main() {
     ivec2 pixelCoords = ivec2(gl_GlobalInvocationID.xy);
     ivec2 imageSize = imageSize(outputImage);
@@ -103,14 +157,11 @@ void main() {
     vec3 rayDirection = normalize((inverseViewMatrix * vec4(rayDirCamera, 0.0)).xyz);
     vec3 rayOrigin = (inverseViewMatrix * vec4(cameraPosition, 1.0)).xyz;
 
-    float hitDist;
-    vec3 hitPos;
-    vec3 hitNorm;
 
     vec3 finalColor;
-
-    if (intersectOrientedBox(0, rayOrigin, rayDirection,hitDist,hitPos, hitNorm)) {
-        finalColor = hitNorm;
+    RayHit hit = traverseBoundingVolumeHierarchy (rayOrigin, rayDirection);
+    if (hit.didHit) {
+        finalColor = hit.color;
     } else {
         finalColor = vec3(0.0, 0.0, 0.0);
     }
